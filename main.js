@@ -4,6 +4,8 @@ import { login } from './src/components/login.js';
 import { signUp } from './src/components/sign-up.js';
 import { home } from './src/components/home.js';
 import { check } from './src/components/successCreateAccount.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js';
+import { auth } from './src/lib/firebase.js';
 
 const root = document.getElementById('root');
 
@@ -24,6 +26,18 @@ export const onNavigate = (pathname) => {
   root.removeChild(root.firstChild);
   root.appendChild(routes[pathname]());
 };
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    onNavigate('/CDMX013-social-network/home');
+    // const displayName = user.displayName;
+    // const email = user.email;
+    // const photoURL = user.photoURL;
+    // const uid = user.uid;
+  } else {
+    onNavigate('/CDMX013-social-network/');
+  }
+});
 
 const path = routes[window.location.pathname];
 

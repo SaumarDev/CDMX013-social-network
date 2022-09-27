@@ -1,6 +1,8 @@
 import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js';
 import { onNavigate } from '../../main.js';
 import { app } from '../lib/firebase.js';
+import { githubLogin } from './github.js';
+import { googleAuth } from './google.js';
 
 export const login = () => {
   const divContainer = document.createElement('div');
@@ -25,6 +27,7 @@ export const login = () => {
   divInputs.setAttribute('class', 'containerInputs');
   p.textContent = 'Log in';
   p.setAttribute('class', 'text');
+
   boxEmail.setAttribute('type', 'email');
   boxEmail.placeholder = 'email@something.com';
   boxEmail.setAttribute('class', 'inputs');
@@ -36,7 +39,7 @@ export const login = () => {
 
   divInputs.append(boxEmail, boxPassword, paraError, loginButton);
 
-  pAccount.textContent = ' Do not you have an account yet? Please,  ';
+  pAccount.textContent = " Don't have an account yet? Please,  ";
   pAccount.setAttribute('id', 'pAccount');
   signUpButton.textContent = 'Sign up here ';
   divAccount.append(pAccount, signUpButton);
@@ -97,15 +100,22 @@ export const login = () => {
     onNavigate('/CDMX013-social-network/');
   });
 
+  loginGoogle.addEventListener('click', googleAuth);
+
   signUpButton.addEventListener('click', () => {
     onNavigate('/CDMX013-social-network/signUp');
   });
+
+  loginGitHub.addEventListener('click', githubLogin);
 
   divContainer.append(
     logo,
     p,
     divInputs,
     divAccount,
+    sectionOr,
+    loginGoogle,
+    loginGitHub,
     footer,
   );
 

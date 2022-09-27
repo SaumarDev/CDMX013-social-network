@@ -1,12 +1,15 @@
 import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js';
 import { onNavigate } from '../../main.js';
 import { app } from '../lib/firebase.js';
+import { githubLogin } from './github.js';
 
 export const signUp = () => {
   const divContainer = document.createElement('div');
   const logo = document.createElement('img');
   const divInputs = document.createElement('div');
   const p = document.createElement('p');
+  const boxName = document.createElement('input');
+  const boxLastName = document.createElement('input');
   const boxEmail = document.createElement('input');
   const boxPassword = document.createElement('input');
   const boxConfirmPassword = document.createElement('input');
@@ -26,6 +29,12 @@ export const signUp = () => {
   divInputs.setAttribute('class', 'containerInputs');
   p.textContent = 'Sing up';
   p.setAttribute('id', 'text');
+  boxName.setAttribute('type', 'text');
+  boxName.setAttribute('class', 'inputs');
+  boxName.placeholder = 'Write your name';
+  boxLastName.setAttribute('type', 'text');
+  boxLastName.setAttribute('class', 'inputs');
+  boxLastName.placeholder = 'Write your last name';
   boxEmail.setAttribute('type', 'email');
   boxEmail.placeholder = 'email@something.com';
   boxEmail.setAttribute('class', 'inputs');
@@ -40,7 +49,7 @@ export const signUp = () => {
   signUpButton.textContent = 'Sign Up';
   signUpButton.setAttribute('class', 'purpleButton');
 
-  divInputs.append(boxEmail, boxPassword, boxConfirmPassword, paraError, paraCongrats, signUpButton, pMessage);
+  divInputs.append(boxName, boxLastName, boxEmail, boxPassword, boxConfirmPassword, paraError, paraCongrats, signUpButton, pMessage);
 
   sectionOr.src = 'src/imgs/sectionOr.png';
   signUpTwitter.src = 'src/imgs/twitter.png';
@@ -56,15 +65,16 @@ export const signUp = () => {
   const auth = getAuth(app);
 
   const createAccount = async () => {
+    const getName = boxName.value;
+    const getLastName = boxLastName.value;
     const signUpEmail = boxEmail.value;
     const signUpPassword = boxPassword.value;
     const confirmPasword = boxConfirmPassword.value;
 
     try {
       if (signUpPassword !== confirmPasword) throw Error('The password does not match');
-      const userCredential = await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword, confirmPasword);
-      // Signed in
-      const user = userCredential.user;
+      const userCredencial = await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword, confirmPasword, getName, getLastName);
+      const user = userCredencial.user;
       paraError.innerHTML = '';
       function congrats() {
         onNavigate('/CDMX013-social-network/check');
@@ -87,18 +97,18 @@ export const signUp = () => {
       if (error.code === 'auth/weak-password') {
         paraError.style.display = 'block';
         paraError.style.opacity = '1';
-        paraError.innerHTML = 'Your password should be at least 6 characters';
+        paraError.innerHTML = 'Your password length should be at least 6 characters';
       }
       if (error.code === 'auth/network-request-failed') {
         paraError.style.display = 'block';
         paraError.style.opacity = '1';
-        paraError.innerHTML = 'Connection failed';
+        paraError.innerHTML = 'Connection fail';
       }
 
       if (signUpEmail === '' && signUpPassword === '' && confirmPasword === '') {
-        paraError.innerHTML = 'Please, fill all the fields';
+        paraError.innerHTML = 'Please, fill out all fields';
       } else if (boxEmail.value === '') {
-        paraError.innerHTML = 'Please write an e-mail';
+        paraError.innerHTML = 'Please write an e-mail address';
       } else if (boxPassword.value === '') {
         paraError.innerHTML = 'Please write a password';
       } else if (boxConfirmPassword.value === '') {
@@ -113,10 +123,13 @@ export const signUp = () => {
     onNavigate('/CDMX013-social-network/');
   });
 
+  signUpGitHub.addEventListener('click', githubLogin);
+
   divContainer.append(
     logo,
     p,
     divInputs,
+    signUpGitHub,
     footer,
   );
 
